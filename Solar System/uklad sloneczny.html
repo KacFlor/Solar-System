@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <meta charset=utf-8>
+		<title>Układ słoneczny</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+        <script src="js/OrbitControls.js"></script>
+		<script>
+            var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 100000000 );
+            camera.position.y = 37030500;
+                    
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+            
+            var controls = new THREE.OrbitControls( camera, renderer.domElement );
+            controls.enableDamping = true;
+            controls.dampingFactor = 1; //w zakresie 0 - 1
+
+            document.body.appendChild( renderer.domElement );
+
+            var path = "textures/stars";
+            var format = '.jpg';
+            var urls = [
+                path + format, path + format,      
+                path + format, path + format,   
+               path + format, path + format,     
+            ];
+            var reflectionCube = new THREE.CubeTextureLoader().load( urls );
+            reflectionCube.format = THREE.RGBFormat;
+            scene.background = reflectionCube;
+
+            
+            var ambientLight = new THREE.AmbientLight( "white" );
+
+            // 1 = 200km            
+
+            //slonce
+            var sun = new THREE.Group();
+			var sunG = new THREE.SphereGeometry( 348170/2, 100, 100); // *5 
+            var sunT = new THREE.TextureLoader().load( 'textures/SunTexture.png' );
+			var sunM = new THREE.Mesh( sunG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: sunT }) );
+            sun.position.x = 0;
+            sun.position.y = 0;
+            sun.position.z = 0;
+            sun.add(sunM);
+           
+            //mercury
+            var mercury = new THREE.Group();
+			var mercuryG = new THREE.SphereGeometry( 2400.397, 10, 10); // *100
+			var mercuryT = new THREE.TextureLoader().load( 'textures/mercurymap.jpg' );
+			var mercuryM = new THREE.Mesh( mercuryG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: mercuryT }) );
+			mercuryM.position.x = 637720;
+            mercury.add(mercuryM);
+            //mercury.rotation.z = 0.12;
+            mercury.rotation.y = 2.2; // pozycja na orbicie
+            mercuryM.rotation.x = 0.0006;
+            sun.add(mercury);
+
+            var orbit1 = new THREE.Line(new THREE.CircleGeometry( 637720,1000),new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .1, side: THREE.BackSide}));
+            orbit1.geometry.vertices.shift();
+            orbit1.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit1);
+
+
+            //wenus
+            var wenus = new THREE.Group();
+			var wenusG = new THREE.SphereGeometry( 6000.518, 10, 10); // *100
+			var wenusT = new THREE.TextureLoader().load( 'textures/venusmap.jpg' );
+			var wenusM = new THREE.Mesh( wenusG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: wenusT }) );
+			wenusM.position.x = 889214;
+            wenus.add(wenusM);
+            //wenus.rotation.z = 0.06;
+            wenus.rotation.y = 2.1;
+            wenusM.rotation.x = 0,046;
+            sun.add(wenus);
+            
+            var orbit2 = new THREE.Line(new THREE.CircleGeometry( 889214,1000),new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .1, side: THREE.BackSide}));
+            orbit2.geometry.vertices.shift();
+            orbit2.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit2);
+
+            //ziemia
+            var ziemia = new THREE.Group();
+			var ziemiaG = new THREE.SphereGeometry( 6300.71, 63.78, 63.78); // *100
+			var ziemiaT = new THREE.TextureLoader().load( 'textures/earthmap.jpg' );
+			var ziemiaM = new THREE.Mesh( ziemiaG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: ziemiaT }) );
+			ziemiaM.position.x = 1096161;
+            ziemia.add(ziemiaM);
+            ziemiaM.rotation.x = 0.41;
+            sun.add(ziemia);
+
+            var orbit3 = new THREE.Line(new THREE.CircleGeometry( 1096161,1000),new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .1, side: THREE.BackSide}));
+            orbit3.geometry.vertices.shift();
+            orbit3.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit3);
+
+
+            //------------------------------------------------------------------------------------
+            //luna
+            var luna = new THREE.Group();
+			var lunaG = new THREE.SphereGeometry( 2100, 10, 10); // *5
+			var lunaT = new THREE.TextureLoader().load( 'textures/moonmap.jpg' );
+			var lunaM = new THREE.Mesh( lunaG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: lunaT }) );
+			lunaM.position.x = 10000.5;
+            lunaM.rotation.x = 0.026;
+            luna.add(lunaM);
+            ziemiaM.add(luna);
+
+            var orbitl = new THREE.Line(new THREE.CircleGeometry( 10000.5 ,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbitl.geometry.vertices.shift();
+            orbitl.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbitl);
+            ziemiaM.add(orbitl);
+            //------------------------------------------------------------------------------------
+            
+            //mars
+            var mars = new THREE.Group();
+			var marsG = new THREE.SphereGeometry( 3300.895, 10, 10); // *100
+			var marsT = new THREE.TextureLoader().load( 'textures/marsmap.jpg' );
+			var marsM = new THREE.Mesh( marsG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: marsT }) );
+			marsM.position.x = 1487881;
+            
+            mars.add(marsM);
+            //mars.rotation.z = 0.03;
+            mars.rotation.y = 3.9;
+            marsM.rotation.x = 0.44;
+            sun.add(mars);
+
+            var orbit4 = new THREE.Line(new THREE.CircleGeometry( 1487881 ,1000),new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .1, side: THREE.BackSide}));
+            orbit4.geometry.vertices.shift();
+            orbit4.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit4);
+
+            //------------------------------------------------------------------------------------
+            //phobos
+            var phobos = new THREE.Group();
+			var phobosG = new THREE.SphereGeometry( 1.126*100, 10, 10); // *100
+			var phobosT = new THREE.TextureLoader().load( 'textures/phobosbump.jpg' );
+			var phobosM = new THREE.Mesh( phobosG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: phobosT }) );
+			phobosM.position.x = 10000;
+            phobos.add(phobosM);
+            marsM.add(phobos);
+
+            var orbitp = new THREE.Line(new THREE.CircleGeometry( 10000 ,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbitp.geometry.vertices.shift();
+            orbitp.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbitp);
+            marsM.add(orbitp);
+            //deimos
+            var deimos = new THREE.Group();
+			var deimosG = new THREE.SphereGeometry( 0.62*150, 10, 10); // *150
+			var deimosT = new THREE.TextureLoader().load( 'textures/deimosbump.jpg' );
+			var deimosM = new THREE.Mesh( deimosG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: deimosT }) );
+			deimosM.position.x = 5000.3;
+            deimos.add(deimosM);
+            marsM.add(deimos);
+
+            var orbitd = new THREE.Line(new THREE.CircleGeometry( 5000.3 ,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbitd.geometry.vertices.shift();
+            orbitd.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbitd);
+            marsM.add(orbitd);
+            //------------------------------------------------------------------------------------
+            
+            //ceres
+            var ceres = new THREE.Group();
+            var ceresG = new THREE.SphereGeometry(400.697*5, 10, 10); //*500
+            var ceresT = new THREE.TextureLoader().load( 'textures/ceresmap.jpg' );
+			var ceresM = new THREE.Mesh( ceresG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: ceresT }) );
+            ceresM.position.x = 2417571;
+            ceres.add(ceresM);
+            sun.add(ceres);
+            ceres.rotation.y = -0.5;
+            scene.add(ceres);
+
+            var orbit5 = new THREE.Line(new THREE.CircleGeometry( 2417571,1000),new THREE.MeshBasicMaterial({color: 'green', transparent: true, opacity: .15, side: THREE.BackSide}));
+            orbit5.geometry.vertices.shift();
+            orbit5.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit5);
+
+            //----------------------------------------------------------------------------------
+
+            //pallas
+            var pallas = new THREE.Group();
+            var pallasG = new THREE.SphereGeometry(2.565*500, 10, 10); //*500
+            var pallasT = new THREE.TextureLoader().load( 'textures/pallasmap.jpg' );
+			var pallasM = new THREE.Mesh( pallasG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: pallasT }) );
+            pallasM.position.x = 2419689;
+                               
+            pallas.add(pallasM);
+            sun.add(pallas);
+            pallas.rotation.y = 1;
+            scene.add(pallas);
+
+            var orbit6 = new THREE.Line(new THREE.CircleGeometry( 2419689,1000),new THREE.MeshBasicMaterial({color: 'green', transparent: true, opacity: .1, side: THREE.BackSide}));
+            orbit6.geometry.vertices.shift();
+            orbit6.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit6);
+
+            //----------------------------------------------------------------------------------
+
+            //juno
+            var juno = new THREE.Group();
+            var junoG = new THREE.SphereGeometry(1.45*500, 10, 10); //*500
+            var junoT = new THREE.TextureLoader().load( 'textures/junomap.jpg' );
+			var junoM = new THREE.Mesh( junoG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: junoT }) );
+            junoM.position.x = 2346460;
+                               
+            juno.add(junoM);
+            sun.add(juno);
+            juno.rotation.y = 1.8;
+            scene.add(juno);
+
+            var orbit7 = new THREE.Line(new THREE.CircleGeometry( 2346460,1000),new THREE.MeshBasicMaterial({color: 'green', transparent: true, opacity: .1, side: THREE.BackSide}));
+            orbit7.geometry.vertices.shift();
+            orbit7.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit7);
+            //----------------------------------------------------------------------------------
+            
+            //westa
+            var westa = new THREE.Group();
+            var westaG = new THREE.SphereGeometry(2.863*500, 10, 10); //*500
+            var westaT = new THREE.TextureLoader().load( 'textures/westamap.jpg' );
+			var westaM = new THREE.Mesh( westaG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: westaT }) );
+            westaM.position.x = 2114920;
+                               
+            westa.add(westaM);
+            sun.add(westa);
+            westa.rotation.y = 2.4;
+            scene.add(westa);
+
+            var orbit8 = new THREE.Line(new THREE.CircleGeometry(2114920,1000),new THREE.MeshBasicMaterial({color: 'green', transparent: true, opacity: .1, side: THREE.BackSide}));
+            orbit8.geometry.vertices.shift();
+            orbit8.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit8);
+
+            //----------------------------------------------------------------------------------
+
+            //jupiter
+            var jupiter = new THREE.Group();
+			var jupiterG = new THREE.SphereGeometry( 6990.11, 200, 200); // *100
+			var jupiterT = new THREE.TextureLoader().load( 'textures/jupitermap.jpg' );
+			var jupiterM = new THREE.Mesh ( jupiterG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: jupiterT }) );
+			jupiterM.position.x = 4238836;
+            jupiter.add(jupiterM);
+            sun.add(jupiter);
+            jupiter.rotation.y =0.5;
+            jupiterM.rotation.x =0,054;
+            
+            var orbit9 = new THREE.Line(new THREE.CircleGeometry(4238836,1000),new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .1, side: THREE.BackSide}));
+            orbit9.geometry.vertices.shift();
+            orbit9.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit9);
+            //------------------------------------------------------------------------------------
+            //IO
+            var IO = new THREE.Group();
+			var IOG = new THREE.SphereGeometry( 18.213*20, 10, 10); // *20
+			var IOT = new THREE.TextureLoader().load( 'textures/IO.jpg' );
+			var IOM = new THREE.Mesh( IOG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: IOT }) );
+			IOM.position.x = 9099;
+            IO.add(IOM);
+            jupiterM.add(IO);
+
+            var orbitI = new THREE.Line(new THREE.CircleGeometry( 9099 ,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbitI.geometry.vertices.shift();
+            orbitI.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbitI);
+            jupiterM.add(orbitI);
+
+            //Europa
+            var europa = new THREE.Group();
+			var europaG = new THREE.SphereGeometry( 15.61*20, 10, 10); // *20
+			var europaT = new THREE.TextureLoader().load( 'textures/europamap.jpg' );
+			var europaM = new THREE.Mesh( europaG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: europaT }) );
+			europaM.position.x = 10345;
+            europa.add(europaM);
+            jupiterM.add(europa);
+
+            var orbitE = new THREE.Line(new THREE.CircleGeometry(10345,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbitE.geometry.vertices.shift();
+            orbitE.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbitE);
+            jupiterM.add(orbitE);
+
+            //Ganimedes
+            var ganimedes = new THREE.Group();
+			var ganimedesG = new THREE.SphereGeometry( 26.341*20, 10, 10); // *20
+			var ganimedesT = new THREE.TextureLoader().load( 'textures/ganimedesmap.jpg' );
+			var ganimedesM = new THREE.Mesh( ganimedesG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: ganimedesT }) );
+			ganimedesM.position.x = 12342;
+            ganimedes.add(ganimedesM);
+            jupiterM.add(ganimedes);
+
+            var orbitG = new THREE.Line(new THREE.CircleGeometry(12342,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbitG.geometry.vertices.shift();
+            orbitG.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbitG);
+            jupiterM.add(orbitG);
+
+            //Kalisto
+            var kalisto = new THREE.Group();
+			var kalistoG = new THREE.SphereGeometry( 24*20, 10, 10); // *20
+			var kalistoT = new THREE.TextureLoader().load( 'textures/kalistomap.jpg' );
+			var kalistoM = new THREE.Mesh( kalistoG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: kalistoT }) );
+			kalistoM.position.x = 16405;
+            kalisto.add(kalistoM);
+            jupiterM.add(kalisto);
+
+            var orbitK = new THREE.Line(new THREE.CircleGeometry(16405,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbitK.geometry.vertices.shift();
+            orbitK.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbitK);
+            jupiterM.add(orbitK);
+
+            //--------------------------------------------------------------------------------------------
+            //Saturn
+            var saturn = new THREE.Group();
+			var saturnG = new THREE.SphereGeometry(5820.32, 200, 200); // *10
+			var saturnT = new THREE.TextureLoader().load( 'textures/saturnmap.jpg' );
+			var saturnM = new THREE.Mesh ( saturnG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: saturnT }) );
+			saturnM.position.x = 7510916;
+            saturn.add(saturnM);
+            sun.add(saturn);
+            saturnM.rotation.x =0,508;
+            
+            var orbit10 = new THREE.Line(new THREE.CircleGeometry(7510916,1000),new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .1, side: THREE.BackSide}));
+            orbit10.geometry.vertices.shift();
+            orbit10.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit10);
+            
+            //--------------------------------------------------------------------------------------------
+            //Ring
+            var ring = new THREE.Group();
+            var ringG = new THREE.RingGeometry(7000,5750*2,32000);
+			var ringT = new THREE.TextureLoader().load( 'textures/saturnring.jpg' );
+            var ringM = new THREE.Mesh(ringG,new THREE.MeshBasicMaterial({color: 0xffff00, map: ringT, side: THREE.DoubleSide}));
+            ring.rotation.x = THREE.Math.degToRad(90);
+            ring.add(ringM);
+            saturnM.add(ring);
+            //Tytan
+            var tytan = new THREE.Group();
+			var tytanG = new THREE.SphereGeometry( 25.75*20, 10, 10); // *20
+			var tytanT = new THREE.TextureLoader().load( 'textures/tytanmap.jpg' );
+			var tytanM = new THREE.Mesh( tytanG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: tytanT }) );
+			tytanM.position.x = 13820+5000;
+            tytan.add(tytanM);
+            saturnM.add(tytan);
+
+            var orbit11 = new THREE.Line(new THREE.CircleGeometry(13820+5000,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit11.geometry.vertices.shift();
+            orbit11.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit11);
+            saturnM.add(orbit11);
+            //Rea
+            var rea = new THREE.Group();
+			var reaG = new THREE.SphereGeometry( 7.64*20, 10, 10); // *20
+			var reaT = new THREE.TextureLoader().load( 'textures/kalistomap.jpg' );
+			var reaM = new THREE.Mesh( reaG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: reaT }) );
+			reaM.position.x = 15455;
+            rea.add(reaM);
+            saturnM.add(rea);
+
+            var orbit12 = new THREE.Line(new THREE.CircleGeometry(15455,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit12.geometry.vertices.shift();
+            orbit12.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit12);
+            saturnM.add(orbit12);
+            //Japet
+            var japet = new THREE.Group();
+			var japetG = new THREE.SphereGeometry( 7.49*20, 10, 10); // *20
+			var japetT = new THREE.TextureLoader().load( 'textures/japetmap.jpg' );
+			var japetM = new THREE.Mesh( japetG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: japetT }) );
+			japetM.position.x = 67820;
+            japet.add(japetM);
+            saturnM.add(japet);
+
+            var orbit13 = new THREE.Line(new THREE.CircleGeometry(67820,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit13.geometry.vertices.shift();
+            orbit13.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit13);
+            saturnM.add(orbit13);
+            //Dione
+            var dione = new THREE.Group();
+			var dioneG = new THREE.SphereGeometry( 5.59*20, 10, 10); // *20
+			var dioneT = new THREE.TextureLoader().load( 'textures/dionemap.jpg' );
+			var dioneM = new THREE.Mesh( dioneG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: dioneT }) );
+			dioneM.position.x = 18322-500;
+            dione.add(dioneM);
+            saturnM.add(dione);
+
+            var orbit14 = new THREE.Line(new THREE.CircleGeometry(18322-500,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit14.geometry.vertices.shift();
+            orbit14.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit14);
+            saturnM.add(orbit14);
+            //Tetyda
+            var tetyda = new THREE.Group();
+			var tetydaG = new THREE.SphereGeometry( 5.3*20, 10, 10); // *20
+			var tetydaT = new THREE.TextureLoader().load( 'textures/tetydamap.jpg' );
+			var tetydaM = new THREE.Mesh( tetydaG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: tetydaT }) );
+			tetydaM.position.x = 13789;
+            tetyda.add(tetydaM);
+            saturnM.add(tetyda);
+
+            var orbit15 = new THREE.Line(new THREE.CircleGeometry(13789,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit15.geometry.vertices.shift();
+            orbit15.rotation.x  = THREE.Math.degToRad(90);
+            scene.add(orbit15);
+            saturnM.add(orbit15);
+            //Enceladus
+            var enceladus = new THREE.Group();
+			var enceladusG = new THREE.SphereGeometry( 2.495*20, 10, 10); // *20
+			var enceladusT = new THREE.TextureLoader().load( 'textures/enceladusmap.jpg' );
+			var enceladusM = new THREE.Mesh( enceladusG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: enceladusT }) );
+			enceladusM.position.x = 14010.2;
+            enceladus.add(enceladusM);
+            saturnM.add(enceladus);
+
+            var orbit16 = new THREE.Line(new THREE.CircleGeometry(14010.2,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit16.geometry.vertices.shift();
+            orbit16.rotation.x  = THREE.Math.degToRad(90);
+            scene.add(orbit16);
+            saturnM.add(orbit16);
+            //Mimas
+            var mimas = new THREE.Group();
+			var mimasG = new THREE.SphereGeometry( 2.074*20, 10, 10); // *20
+			var mimasT = new THREE.TextureLoader().load( 'textures/mimasmap.jpg' );
+			var mimasM = new THREE.Mesh( mimasG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: mimasT }) );
+		    mimasM.position.x = 13747.7-500;
+            mimas.add(mimasM);
+            saturnM.add(mimas);
+
+            var orbit17 = new THREE.Line(new THREE.CircleGeometry(13747.7-500,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit17.geometry.vertices.shift();
+            orbit17.rotation.x  = THREE.Math.degToRad(90);
+            scene.add(orbit17);
+            saturnM.add(orbit17);
+            //---------------------------------------------------------------------------------------------------
+
+            //Uran
+            var uran = new THREE.Group();
+			var uranG = new THREE.SphereGeometry(2536.2, 200, 200); // *10
+			var uranT = new THREE.TextureLoader().load( 'textures/uranmap.jpg' );
+			var uranM = new THREE.Mesh ( uranG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: uranT }) );
+			uranM.position.x = 21741432;
+            uran.add(uranM);
+            sun.add(uran);
+            uranM.rotation.x = THREE.Math.degToRad(90);
+            
+            var orbit18 = new THREE.Line(new THREE.CircleGeometry(21741432,1000),new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .1, side: THREE.BackSide}));
+            orbit18.geometry.vertices.shift();
+            orbit18.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit18);
+            //---------------------------------------------------------------------------------------------------
+            //RingU
+            var ringu = new THREE.Group();
+            var ringuG = new THREE.RingGeometry(2725.25,4051,3200);
+			var ringuT = new THREE.TextureLoader().load( 'textures/uranring.png' );
+            var ringuM = new THREE.Mesh(ringuG,new THREE.MeshBasicMaterial({color: 'white', map: ringuT, side: THREE.DoubleSide}));
+            ringu.rotation.x = THREE.Math.degToRad(90);
+            ringu.add(ringuM);
+            uranM.add(ringu);
+            //Tytania
+            var tytania = new THREE.Group();
+			var tytaniaG = new THREE.SphereGeometry( 7.89*20, 10, 10); // *20
+			var tytaniaT = new THREE.TextureLoader().load( 'textures/tytaniamap.jpg' );
+			var tytaniaM = new THREE.Mesh( tytaniaG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: tytaniaT }) );
+		    tytaniaM.position.x = 5232.5+5000;
+            tytania.add(tytaniaM);
+            uranM.add(tytania);
+
+            var orbit19 = new THREE.Line(new THREE.CircleGeometry(5232.5+5000,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit19.geometry.vertices.shift();
+            orbit19.rotation.x  = THREE.Math.degToRad(90);
+            scene.add(orbit19);
+            uranM.add(orbit19);
+            //Oberon
+            var oberon = new THREE.Group();
+			var oberonG = new THREE.SphereGeometry(7.61*20, 10, 10); // *20
+			var oberonT = new THREE.TextureLoader().load( 'textures/oberonmap.jpg' );
+			var oberonM = new THREE.Mesh( oberonG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: oberonT }) );
+		    oberonM.position.x = 5968.5+5000;
+            oberon.add(oberonM);
+            uranM.add(oberon);
+
+            var orbit20 = new THREE.Line(new THREE.CircleGeometry(5968.5+5000,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit20.geometry.vertices.shift();
+            orbit20.rotation.x  = THREE.Math.degToRad(90);
+            scene.add(orbit20);
+            uranM.add(orbit20);
+            //Umbriel
+            var umbriel = new THREE.Group();
+			var umbrielG = new THREE.SphereGeometry( 5.845*20, 10, 10); // *20
+			var umbrielT = new THREE.TextureLoader().load( 'textures/umbrielmap.jpg' );
+			var umbrielM = new THREE.Mesh( umbrielG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: umbrielT }) );
+		    umbrielM.position.x =4380+5000;
+            umbriel.add(umbrielM);
+            uranM.add(umbriel);
+
+            var orbit21 = new THREE.Line(new THREE.CircleGeometry(4380+5000,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit21.geometry.vertices.shift();
+            orbit21.rotation.x  = THREE.Math.degToRad(90);
+            scene.add(orbit21);
+            uranM.add(orbit21);
+            //Ariel
+            var ariel = new THREE.Group();
+			var arielG = new THREE.SphereGeometry( 5.79*20, 10, 10); // *20
+			var arielT = new THREE.TextureLoader().load( 'textures/arielmap.jpg' );
+			var arielM = new THREE.Mesh( arielG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: arielT }) );
+		    arielM.position.x = 4004.5+5000;
+            ariel.add(arielM);
+            uranM.add(ariel);
+
+            var orbit22 = new THREE.Line(new THREE.CircleGeometry(4004.5+5000,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit22.geometry.vertices.shift();
+            orbit22.rotation.x  = THREE.Math.degToRad(90);
+            scene.add(orbit22);
+            uranM.add(orbit22);
+            //Miranda
+            var miranda = new THREE.Group();
+			var mirandaG = new THREE.SphereGeometry( 2.355*20, 10, 10); // *20
+			var mirandaT = new THREE.TextureLoader().load( 'textures/mirandamap.jpg' );
+			var mirandaM = new THREE.Mesh( mirandaG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: mirandaT }) );
+		    mirandaM.position.x = 3699.5+5000;
+            miranda.add(mirandaM);
+            uranM.add(miranda);
+
+            var orbit23 = new THREE.Line(new THREE.CircleGeometry(3699.5+5000,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit23.geometry.vertices.shift();
+            orbit23.rotation.x  = THREE.Math.degToRad(90);
+            scene.add(orbit23);
+            uranM.add(orbit23);
+
+            //-------------------------------------------------------------------------------------------------------
+
+            //neptun
+            var neptun = new THREE.Group();
+			var neptunG = new THREE.SphereGeometry(2462.2, 200, 200); // *10
+			var neptunT = new THREE.TextureLoader().load( 'textures/neptunmap.png' );
+			var neptunM = new THREE.Mesh ( neptunG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: neptunT }) );
+			neptunM.position.x = 22477828;
+            neptun.add(neptunM);
+            sun.add(neptun);
+            
+            var orbit24 = new THREE.Line(new THREE.CircleGeometry(22477828,1000),new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .1, side: THREE.BackSide}));
+            orbit24.geometry.vertices.shift();
+            orbit24.rotation.x = THREE.Math.degToRad(90);
+            scene.add(orbit24);
+
+            //--------------------------------------------------------------------------------------------------------
+
+            //Tryton
+            var tryton = new THREE.Group();
+			var trytonG = new THREE.SphereGeometry( 13.534*20, 10, 10); // *20
+			var trytonT = new THREE.TextureLoader().load( 'textures/trytonmap.jpg' );
+			var trytonM = new THREE.Mesh( trytonG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: trytonT }) );
+		    trytonM.position.x = 4235;
+            tryton.add(trytonM);
+            neptunM.add(tryton);
+
+            var orbit25 = new THREE.Line(new THREE.CircleGeometry(4235,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit25.geometry.vertices.shift();
+            orbit25.rotation.x  = THREE.Math.degToRad(90);
+            scene.add(orbit25);
+            neptunM.add(orbit25);
+            
+            //Prometeusz
+            var prometeusz = new THREE.Group();
+			var prometeuszG = new THREE.SphereGeometry( 2.2*20, 10, 10); // *20
+			var prometeuszT = new THREE.TextureLoader().load( 'textures/mirandamap.jpg' );
+			var prometeuszM = new THREE.Mesh( prometeuszG, new THREE.MeshBasicMaterial({ color: 0xffffff, map: prometeuszT }) );
+		    prometeuszM.position.x = 3050;
+            prometeusz.add(prometeuszM);
+            neptunM.add(prometeusz);
+
+            var orbit26 = new THREE.Line(new THREE.CircleGeometry(3050,1000,100),new THREE.MeshBasicMaterial({color: 'blue', transparent: true, opacity: .2, side: THREE.BackSide}));
+            orbit26.geometry.vertices.shift();
+            orbit26.rotation.x  = THREE.Math.degToRad(90);
+            scene.add(orbit26);
+            neptunM.add(orbit26);
+            //--------------------------------------------------------------------------------------------------------
+            
+            document.addEventListener("keydown", onDocumentKeyDown, false);
+            function onDocumentKeyDown(event) {
+                var keyCode = event.which;
+                if (keyCode == 48) {controls.target.set(0,0,0);}
+                else if (keyCode == 49) {controls.target.set(-mercuryM.position.x,0,0);}
+                else if (keyCode == 50) {controls.target.set(-wenusM.position.x,0,0);}
+                else if (keyCode == 51) {controls.target.set(ziemiaM.position.x,0,0);}
+                else if (keyCode == 52) {controls.target.set(0,0,marsM.position.x);}
+                else if (keyCode == 53) {controls.target.set(jupiterM.position.x,0,0);}
+                else if (keyCode == 54) {controls.target.set(saturnM.position.x,0,0);}
+                else if (keyCode == 55) {controls.target.set(uranM.position.x,0,0);}
+                else if (keyCode == 56) {controls.target.set(neptunM.position.x,0,0);}
+                
+            };
+            
+            
+            scene.add(sun);
+            
+
+
+
+            function renderScene(){
+
+                renderer.render(scene, camera);
+            }
+
+            function animate() {
+                //1 sekunda = 1 godzina
+               
+                sunM.rotation.y += 6.28/1500/24;
+                
+                mercury.rotation.y += 6.28/5280/24;
+				mercuryM.rotation.y += 6.28/3480/24;
+
+                wenus.rotation.y += 6.28/13440/24;
+				wenusM.rotation.y += -6.28/14580/24;
+
+                ziemia.rotation.y += 6.28/21900/24;
+				ziemiaM.rotation.y += 6.28/60/24;
+                
+                //-----------------------
+                luna.rotation.y += 6.28/1638/24;
+				lunaM.rotation.y += 6.28/1620/24;
+                //-----------------------
+
+                mars.rotation.y += 6.28/41160/24;
+				marsM.rotation.y += 6.28/60/24;
+                
+                //-----------------------
+                phobos.rotation.y += 6.28/18/24;
+				phobosM.rotation.y += 6.28/60/24;
+                
+                deimos.rotation.y += 6.28/72/24;
+				deimosM.rotation.y += 6.28/60/24;
+                //-----------------------
+            
+                ceres.rotation.y += 6.28/40316/24;
+                ceresM.rotation.y += 6.28/22.675/24;
+
+                pallas.rotation.y += 6.28/40368/24;
+                pallasM.rotation.y += 6.28/19.5/24;
+
+                juno.rotation.y += 6.28/38256/24;
+                junoM.rotation.y += 6.28/18/24;
+
+                westa.rotation.y += 6.28/31800/24;
+                westaM.rotation.y += 6.28/13.5/24;
+                
+                jupiter.rotation.y += 6.28/259800/24;
+				jupiterM.rotation.y += 6.28/25/24;
+                //-----------------------
+                IO.rotation.y += 6.28/106,14/24;
+				IOM.rotation.y += 6.28/24,8125/24;
+
+                europa.rotation.y += 6.28/210/24;
+				europaM.rotation.y += 6.28/25/24;
+
+                ganimedes.rotation.y += 6.28/420/24;
+				ganimedesM.rotation.y += 6.28/25/24;
+
+                kalisto.rotation.y += 6.28/996/24;
+				kalistoM.rotation.y += 6.28/25/24;
+                //------------------------
+                
+                saturn.rotation.y += 6.28/645550/24;
+				saturnM.rotation.y += 6.28/26.64/24;
+                //------------------------
+                tytan.rotation.y += 6.28/960/24;
+				tytanM.rotation.y += 6.28/26.64/24;
+
+                rea.rotation.y += 6.28/270/24;
+				reaM.rotation.y += 6.28/26.64/24;
+
+                japet.rotation.y += 6.28/4440/24;
+				japetM.rotation.y += 6.28/26.64/24;
+
+                dione.rotation.y += 6.28/150/24;
+				dioneM.rotation.y += 6.28/26.64/24;
+
+                tetyda.rotation.y += 6.28/108/24;
+				tetydaM.rotation.y += 6.28/26.64/24;
+
+                enceladus.rotation.y += 6.28/78/24;
+				enceladusM.rotation.y += 6.28/26.64/24;
+                //------------------------
+
+                uran.rotation.y += 6.28/1841124/24;
+				uranM.rotation.y += -6.28/43.1/24;
+                //------------------------
+                tytania.rotation.y += 6.28/522/24;
+				tytaniaM.rotation.y += -6.28/43.1/24;
+
+                oberon.rotation.y += 6.28/810/24;
+				oberonM.rotation.y += -6.28/43.1/24;
+
+                umbriel.rotation.y += 6.28/240/24;
+				umbrielM.rotation.y += -6.28/43.1/24;
+
+                ariel.rotation.y += 6.28/150/24;
+				arielM.rotation.y += -6.28/43.1/24;
+
+                miranda.rotation.y += 6.28/84/24;
+				mirandaM.rotation.y += -6.28/43.1/24;
+                //------------------------
+
+                neptun.rotation.y += 6.28/9033750/24;
+				neptunM.rotation.y += 6.28/40/24;
+                //------------------------
+
+                tryton.rotation.y += 6.28/354/24;
+				trytonM.rotation.y += 6.28/40/24;
+
+                prometeusz.rotation.y += 6.28/69/24;
+				prometeuszM.rotation.y += 6.28/40/24;
+
+                //------------------------
+                requestAnimationFrame( animate );
+                //controls.update();
+                renderScene();
+            };
+
+            animate();
+            		
+		</script>
+	</body>
+</html>
